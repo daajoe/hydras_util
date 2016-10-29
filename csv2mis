@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+import csv
+from datetime import datetime
+from itertools import imap, izip
+from locale import *
+import os
+from StringIO import StringIO
+from sys import stdin, stdout
+from toolz import merge_with
+import yaml
+
+#setlocale(LC_NUMERIC, 'de_DE')
+
+#READ MAPPING
+mapfile='mapping.yaml'
+if os.path.isfile(mapfile):
+   with open(mapfile, 'r') as d:
+   	map = yaml.load(d)
+
+station=map['station']['id']
+dateformat=map['station']['dateformat']
+
+mis2csv=map['station']['sensors']
+csv2mis={v:k for k,v in mis2csv.items()}
+
+#PROVIDE HEADER DESCRIPTION
+header='<STATION>{station}</STATION><SENSOR>{sensor}</SENSOR><DATEFORMAT>{dateformat}</DATEFORMAT>'
+
+#READ DATA
+reader = csv.DictReader(stdin, delimiter=';')
+data = merge_with(list, *reader)
+
+
+#linewise csv output
+stream=StringIO()
+csvwriter = csv.writer(stream, delimiter=';',lineterminator='')
+#csvwriter.writerow(reader.fieldnames)
+#csvwriter.writerows(imap(reorderfunc,izip(*data.values())))
+
+
+#PRINT DATA
+for k in csv2mis:
+    stream.write(header.format(station=station,sensor=csv2mis[k],dateformat=dateformat))
+    stream.write("\n")
+    for d,t,v in izip(imap(lambda x: x.replace('-',''),data['date']), imap(lambda x: x+':00', data['time']),data[k]):
+       try:
+          v=atof(v)
+       except ValueError:
+          pass
+       stream.write('"')
+       csvwriter.writerow((d,t,v))
+       stream.write('"\n')
+       #stdout.write(stream.getvalue())
+       #exit(1)
+
+stdout.write(stream.getvalue())
+stdout.flush()

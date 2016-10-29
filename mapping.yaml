@@ -1,0 +1,22 @@
+station:
+  id: 123
+  dateformat: YYYYMMDD
+  sensors:
+    130: 'out_temp'
+    131: 'hi_out_temp'
+    132: 'low_out_temp'
+    101: 'rainfall'
+    102: 'hi_rain_rate'
+    150: 'barometer'
+    120: 'solar_rad'
+    119: 'num_wind_samples'
+    139: 'inside_temp'
+    149: 'in_humidity'
+    140: 'out_humidity'
+    110: 'avg_wind'
+    111: 'hi_wind'
+    116: 'hi_wind_dir'
+    115: 'prevailing_dir'
+      
+    
+    
